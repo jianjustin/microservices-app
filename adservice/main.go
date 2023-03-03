@@ -1,22 +1,13 @@
 package main
 
 import (
-	"context"
-	"github.com/go-micro/plugins/v4/registry/etcd"
-	"go-micro.dev/v4/registry"
-	"strings"
-	"time"
-
 	grpcc "github.com/go-micro/plugins/v4/client/grpc"
+	"github.com/go-micro/plugins/v4/registry/etcd"
 	_ "github.com/go-micro/plugins/v4/registry/kubernetes"
 	grpcs "github.com/go-micro/plugins/v4/server/grpc"
-	"github.com/go-micro/plugins/v4/wrapper/trace/opentelemetry"
 	"go-micro.dev/v4"
 	"go-micro.dev/v4/logger"
-	"go-micro.dev/v4/server"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/propagation"
-
+	"go-micro.dev/v4/registry"
 	"go-microservices/adservice/config"
 	"go-microservices/adservice/handler"
 	pb "go-microservices/adservice/proto"
@@ -46,6 +37,7 @@ func main() {
 		micro.Version(version),
 		micro.Address(config.Address()),
 	}
+	/**
 	if cfg := config.Tracing(); cfg.Enable {
 		tp, err := newTracerProvider(name, srv.Server().Options().Id, cfg.Jaeger.URL)
 		if err != nil {
@@ -70,6 +62,7 @@ func main() {
 		}
 		opts = append(opts, micro.WrapHandler(opentelemetry.NewHandlerWrapper(traceOpts...)))
 	}
+	*/
 	srv.Init(opts...)
 
 	// Register handler
