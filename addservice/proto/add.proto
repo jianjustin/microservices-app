@@ -3,9 +3,15 @@ syntax = "proto3";
 option go_package = "./;add";
 
 package add;
+import "google/api/annotations.proto";
 
 service AddService {
-  rpc HandleAdd (AddRequest) returns (AddReply) {}
+  rpc HandleAdd (AddRequest) returns (AddReply) {
+    option (google.api.http) = {
+      post: "/v1/add/handleAdd"
+      body: "*"
+    };
+  }
 }
 
 message AddRequest {

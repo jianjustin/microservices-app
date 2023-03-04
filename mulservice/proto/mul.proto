@@ -3,9 +3,15 @@ syntax = "proto3";
 option go_package = "./;mul";
 
 package mul;
+import "google/api/annotations.proto";
 
 service MulService {
-  rpc HandleMul (MulRequest) returns (MulReply) {}
+  rpc HandleMul (MulRequest) returns (MulReply) {
+    option (google.api.http) = {
+      post: "/v1/mul/handleMul"
+      body: "*"
+    };
+  }
 }
 
 message MulRequest {

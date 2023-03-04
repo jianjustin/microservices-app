@@ -3,9 +3,15 @@ syntax = "proto3";
 option go_package = "./;sub";
 
 package sub;
+import "google/api/annotations.proto";
 
 service SubService {
-  rpc HandleSub (SubRequest) returns (SubReply) {}
+  rpc HandleSub (SubRequest) returns (SubReply) {
+    option (google.api.http) = {
+      post: "/v1/sub/handleSub"
+      body: "*"
+    };
+  }
 }
 
 message SubRequest {

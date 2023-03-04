@@ -3,13 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"go-microservices/subservice/config"
 	etcd_pkg "go-microservices/subservice/pkg"
 	pb "go-microservices/subservice/proto"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"net"
+	"net/http"
 	"sync"
 	"time"
 )
@@ -55,9 +58,34 @@ func main() {
 			s := grpc.NewServer()
 			pb.RegisterSubServiceServer(s, &server{Addr: fmt.Sprintf("0.0.0.0%s", addr)})
 			log.Printf("server listening at %v", lis.Addr())
-			if err := s.Serve(lis); err != nil {
-				log.Fatalf("failed to serve: %v", err)
+			go func() {
+				log.Fatalln(s.Serve(lis))
+			}()
+
+			conn, err := grpc.DialContext(
+				context.Background(),
+				fmt.Sprintf("0.0.0.0%s", addr),
+				grpc.WithBlock(),
+				grpc.WithTransportCredentials(insecure.NewCredentials()),
+			)
+			if err != nil {
+				log.Fatalln("Failed to dial server:", err)
 			}
+
+			gwmux := runtime.NewServeMux()
+			// Register Greeter
+			err = pb.RegisterSubServiceHandler(context.Background(), gwmux, conn)
+			if err != nil {
+				log.Fatalln("Failed to register gateway:", err)
+			}
+
+			gwServer := &http.Server{
+				Addr:    config.HTTP_ADDR[addr],
+				Handler: gwmux,
+			}
+
+			log.Println("Serving gRPC-Gateway on http://0.0.0.0" + config.HTTP_ADDR[addr])
+			log.Fatalln(gwServer.ListenAndServe())
 		}(addr)
 
 	}

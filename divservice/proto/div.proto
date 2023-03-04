@@ -3,9 +3,15 @@ syntax = "proto3";
 option go_package = "./;div";
 
 package div;
+import "google/api/annotations.proto";
 
 service DivService {
-  rpc HandleDiv (DivRequest) returns (DivReply) {}
+  rpc HandleDiv (DivRequest) returns (DivReply) {
+    option (google.api.http) = {
+      post: "/v1/div/handleDiv"
+      body: "*"
+    };
+  }
 }
 
 message DivRequest {
