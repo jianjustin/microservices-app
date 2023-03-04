@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "./;mul";
+
+package mul;
+
+service MulService {
+  rpc HandleMul (MulRequest) returns (MulReply) {}
+}
+
+message MulRequest {
+  double a = 1;
+  double b = 2;
+}
+
+message MulReply {
+  double result = 1;
+}

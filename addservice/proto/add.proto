@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "./;add";
+
+package add;
+
+service AddService {
+  rpc HandleAdd (AddRequest) returns (AddReply) {}
+}
+
+message AddRequest {
+  double a = 1;
+  double b = 2;
+}
+
+message AddReply {
+  double result = 1;
+}

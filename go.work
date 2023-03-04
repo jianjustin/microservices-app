@@ -1,5 +1,8 @@
 go 1.19
 
 use (
-    ./adservice
+    ./addservice
+    ./subservice
+    ./divservice
+    ./mulservice
 )

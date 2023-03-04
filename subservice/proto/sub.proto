@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "./;sub";
+
+package sub;
+
+service SubService {
+  rpc HandleSub (SubRequest) returns (SubReply) {}
+}
+
+message SubRequest {
+  double a = 1;
+  double b = 2;
+}
+
+message SubReply {
+  double result = 1;
+}

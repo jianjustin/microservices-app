@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "./;div";
+
+package div;
+
+service DivService {
+  rpc HandleDiv (DivRequest) returns (DivReply) {}
+}
+
+message DivRequest {
+  double a = 1;
+  double b = 2;
+}
+
+message DivReply {
+  double result = 1;
+}
