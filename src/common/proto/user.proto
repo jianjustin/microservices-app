@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "./;proto";
+
+package proto;
+import "google/api/annotations.proto";
+
+
+service UserService {
+  rpc AddUser (UserCreateRequest) returns (UserCreateReply){
+    option (google.api.http) = {
+      post: "/v1/user/addUser"
+      body: "*"
+    };
+  }
+}
+
+
+message UserCreateRequest {
+  string name = 1;
+}
+
+message UserCreateReply {
+  string res = 1;
+}
