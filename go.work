@@ -1,5 +1,8 @@
-go 1.19
+go 1.20
 
 use (
-    ./resourceservice
+    ./src/resourceservice
+    ./src/userservice
+    ./src/roleservice
+    ./src/authservice
 )
