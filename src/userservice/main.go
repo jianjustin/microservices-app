@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	uservice "github.com/jianjustin/userservice/proto"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -39,34 +42,32 @@ func main() {
 	go func() {
 		log.Fatalln(s.Serve(lis))
 	}()
-	/*
-	   *
 
-	   	// Create a client connection to the gRPC server we just started
-	   	// This is where the gRPC-Gateway proxies the requests
-	   	conn, err := grpc.DialContext(
-	   		context.Background(),
-	   		fmt.Sprintf("0.0.0.0:%d", *port),
-	   		grpc.WithBlock(),
-	   		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	   	)
-	   	if err != nil {
-	   		log.Fatalln("Failed to dial server:", err)
-	   	}
+	// Create a client connection to the gRPC server we just started
+	// This is where the gRPC-Gateway proxies the requests
+	conn, err := grpc.DialContext(
+		context.Background(),
+		fmt.Sprintf("0.0.0.0:%d", *port),
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalln("Failed to dial server:", err)
+	}
 
-	   	gwmux := runtime.NewServeMux()
-	   	// Register Greeter
-	   	err = uservice.RegisterAHandler(context.Background(), gwmux, conn)
-	   	if err != nil {
-	   		log.Fatalln("Failed to register gateway:", err)
-	   	}
+	gwmux := runtime.NewServeMux()
+	// Register Greeter
+	err = uservice.RegisterUserServiceHandler(context.Background(), gwmux, conn)
+	if err != nil {
+		log.Fatalln("Failed to register gateway:", err)
+	}
 
-	   	gwServer := &http.Server{
-	   		Addr:    fmt.Sprintf(":%d", *restful),
-	   		Handler: gwmux,
-	   	}
+	gwServer := &http.Server{
+		Addr:    fmt.Sprintf(":%d", *restful),
+		Handler: gwmux,
+	}
 
-	   	log.Println(fmt.Sprintf("Serving gRPC-Gateway on http://0.0.0.0::%d", *restful))
-	   	log.Fatalln(gwServer.ListenAndServe())
-	*/
+	log.Println(fmt.Sprintf("Serving gRPC-Gateway on http://0.0.0.0::%d", *restful))
+	log.Fatalln(gwServer.ListenAndServe())
+
 }
