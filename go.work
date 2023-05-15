@@ -1,9 +1,6 @@
 go 1.20
 
 use (
-    ./src/resourceservice
-    ./src/userservice
-    ./src/roleservice
-    ./src/authservice
     ./src/common
+	./src/calculateservice
 )

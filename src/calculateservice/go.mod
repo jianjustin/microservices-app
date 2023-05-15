@@ -1,4 +1,4 @@
-module github.com/jianjustin/userservice
+module github.com/jianjustin/calculateservice
 
 go 1.20
 

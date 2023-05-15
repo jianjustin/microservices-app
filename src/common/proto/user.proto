@@ -9,17 +9,92 @@ import "google/api/annotations.proto";
 service UserService {
   rpc AddUser (UserCreateRequest) returns (UserCreateReply){
     option (google.api.http) = {
-      post: "/v1/user/addUser"
+      post: "/v1/user/add"
       body: "*"
     };
   }
+
+  rpc EditUser (UserEditRequest) returns (UserEditReply){
+    option (google.api.http) = {
+      put: "/v1/user/edit/{userId}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteUser (UserDeleteRequest) returns (UserDeleteReply){
+    option (google.api.http) = {
+      delete: "/v1/user/delete/{userId}"
+    };
+  }
+
+  rpc GetUser (UserRequest) returns (UserReply){
+    option (google.api.http) = {
+      get: "/v1/user/findById/{userId}"
+    };
+  }
+
+  rpc GetUserList (UserListRequest) returns (UserListReply){
+    option (google.api.http) = {
+      post: "/v1/user/findList"
+      body: "*"
+    };
+  }
+
 }
 
 
 message UserCreateRequest {
-  string name = 1;
+  string username = 1;
 }
 
 message UserCreateReply {
-  string res = 1;
+  string msg = 1;
+  int64 code = 2;
+  Data data = 3;
+}
+
+message UserEditRequest {
+  int64 userId = 1;
+  string username = 2;
+}
+
+message UserEditReply {
+  string msg = 1;
+  int64 code = 2;
+  Data data = 3;
+}
+
+message UserDeleteRequest {
+  int64 userId = 1;
+}
+
+message UserDeleteReply {
+  string msg = 1;
+  int64 code = 2;
+}
+
+message UserRequest {
+  int64 userId = 1;
+}
+
+message UserReply {
+  string msg = 1;
+  int64 code = 2;
+  Data data = 3;
+}
+
+message UserListRequest {
+  int64 page = 1;
+  int64 pageSize = 2;
+}
+
+message UserListReply {
+  string msg = 1;
+  int64 code = 2;
+  repeated Data list = 3;
+}
+
+message Data {
+  int64 userId = 1;
+  string username = 2;
 }

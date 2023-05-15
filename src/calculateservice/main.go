@@ -4,15 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	calculateService "github.com/jianjustin/calculateservice/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 	"net"
 	"net/http"
-
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	uservice "github.com/jianjustin/userservice/proto"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
@@ -21,11 +19,31 @@ var (
 )
 
 type server struct {
-	uservice.UnimplementedUserServiceServer
+	calculateService.UnimplementedCalculateServiceServer
 }
 
-func (s *server) AddUser(ctx context.Context, in *uservice.UserCreateRequest) (*uservice.UserCreateReply, error) {
-	return &uservice.UserCreateReply{}, nil
+func (s *server) Add(ctx context.Context, in *calculateService.AddRequest) (*calculateService.AddReply, error) {
+	return &calculateService.AddReply{
+		Res: in.A + in.B,
+	}, nil
+}
+
+func (s *server) Sub(ctx context.Context, in *calculateService.SubRequest) (*calculateService.SubReply, error) {
+	return &calculateService.SubReply{
+		Res: in.A - in.B,
+	}, nil
+}
+
+func (s *server) Mul(ctx context.Context, in *calculateService.MulRequest) (*calculateService.MulReply, error) {
+	return &calculateService.MulReply{
+		Res: in.A * in.B,
+	}, nil
+}
+
+func (s *server) Div(ctx context.Context, in *calculateService.DivRequest) (*calculateService.DivReply, error) {
+	return &calculateService.DivReply{
+		Res: in.A / in.B,
+	}, nil
 }
 
 func main() {
@@ -35,7 +53,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	uservice.RegisterUserServiceServer(s, &server{})
+	calculateService.RegisterCalculateServiceServer(s, &server{})
 
 	// Serve gRPC server
 	log.Printf("Serving gRPC on 0.0.0.0:%d\n", *port)
@@ -57,7 +75,7 @@ func main() {
 
 	gwmux := runtime.NewServeMux()
 	// Register Greeter
-	err = uservice.RegisterUserServiceHandler(context.Background(), gwmux, conn)
+	err = calculateService.RegisterCalculateServiceHandler(context.Background(), gwmux, conn)
 	if err != nil {
 		log.Fatalln("Failed to register gateway:", err)
 	}
