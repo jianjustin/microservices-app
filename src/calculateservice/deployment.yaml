@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculate-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: calculate-app
+  template:
+    metadata:
+      labels:
+        app: calculate-app
+    spec:
+      containers:
+        - name: calculate-app
+          image: jianjustin/calculate-service:1.0.0
+          ports:
+            - containerPort: 50051 # gRPC Port
+            - containerPort: 8080 # HTTP Port

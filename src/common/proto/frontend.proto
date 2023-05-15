@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option go_package = "./;proto";
+
+package proto;
+import "google/api/annotations.proto";
+
+
+service FrontendService {
+  rpc Calculate (CalculateRequest) returns (CalculateReply){
+    option (google.api.http) = {
+      post: "/v1/calculate"
+      body: "*"
+    };
+  }
+}
+
+
+message CalculateRequest {
+  string input = 1;
+}
+
+message CalculateReply {
+  int64 res = 1;
+}
