@@ -1,0 +1,73 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: postgres-secret
+  namespace: default
+spec:
+  encryptedData:
+    postgresql-password: AgAOKxZOTZ4gf2r4fbVEWZEUQP0fS+8/5mQ60RjeAa5rGtFvz2NjnoT14O6Uwv/iS3PSbWo7dpLck1JhkMwlfOLbX9fPtbf2yYeKZDBQJ67GsxBBWYzMf7/n9NGNNfIZM5m6dlrf11GSoBU6zMNGMoYLAJSXI+e8H4Rmo8tTqo+rpni3HjAYHUDSxOblqzlEFqqfAGp8xOAGFA0LFYrrxR0n1ov5pRUOScAPlfhG6ebFU3a84WJhXw6tq2I2eps3wedY3N0aevYupyAws/kr9WZNJvSKDZBfxMy5EKG9NkUil5D4UCantqeq7RV2/Nz4roiWszYMC6KDwIqdUNrWblpqrPN32vlPa+N1TbS8caQMEg7t1/fpHQTUW3+gQUzbYhaDLLxONsFxwBxAHyD/5xVJhBx1Bk20HcaYDFVNKSYkn0t+w1Y7RWjzKpYPU9MAA86HGBdb5dj2WZAzXaE51yvsA56nmYE3E7XJPnL/jnIrElPoyX9YHX+enFmLa2QlVhhkp1gUDUxNJTiSNfzyovoQL7iY+1OiqAKC4A/+Gzp082GF0DD4S3O6inX2jfe2oezP9hhbD5/NIKla//M4B2He2Ow6Hpy8Xcj4ptFpxWpSFgYRD1TIitjYY2YA0A6D931JOSFR3MFzy3k9caF+AAPnbrw6Gwm+I3eBAYTXbwQ7O78X6npHHMacTxXdqqmUzqVrQv+NfAY9dWIT
+  template:
+    metadata:
+      creationTimestamp: null
+      name: postgres-secret
+      namespace: default
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgresql-password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-storage
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgres
